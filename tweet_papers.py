@@ -20,21 +20,29 @@ def tweet_latest_day(dry_run=True):
     predicted_papers = df.loc[index_to_predict_for]
     to_tweet = predicted_papers[predicted_papers.prediction > TWEET_THRESHOLD]
     if not to_tweet.empty:
+        published_on = to_tweet.iloc[0].published.date()
         paper_tweets = to_tweet.sort_values('prediction', ascending=False).apply(get_tweet_text, axis=1)
-        title_tweet = get_title_tweet(to_tweet.iloc[0].published.date())
+        title_tweet = get_title_tweet(published_on)
         to_tweet = [title_tweet] + list(paper_tweets.values)
 
         if dry_run:
             for t in to_tweet:
                 print t
                 print
+
+        elif published_on < pd.Timestamp('now').date():
+            print "Don't have any new papers for today, latest are from {}".format(published_on)
+            return
+
         else:
             in_reply_to = None
             api = get_tweepy_api()
+            print 'Tweeting {} papers published on {}'.format(len(to_tweet), published_on)
             for t in to_tweet:
                 last_tweet = api.update_status(t, in_reply_to)
                 in_reply_to = last_tweet.id
                 sleep(TIME_BETWEEN_TWEETS)
+            print 'Done'
 
 
 def get_published_on_day_index(df, date=None):
