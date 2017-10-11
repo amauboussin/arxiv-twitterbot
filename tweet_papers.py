@@ -77,17 +77,17 @@ def get_tweet_text(paper):
     else:
         authors = paper.authors[0]
 
-    full_tweet = u'{title}, {authors} {link}'.format(title=title, authors=authors, link=link)
+    full_tweet = u'{title}. {authors} {link}'.format(title=title, authors=authors, link=link)
     if len(full_tweet) < 140:
         return full_tweet
 
     authors_et_al = last_names[0] + u' et al.'
-    short_author_tweet = u'{title}, {authors} {link}'.format(title=title, authors=authors_et_al,
+    short_author_tweet = u'{title}. {authors} {link}'.format(title=title, authors=authors_et_al,
                                                                 link=link)
     if len(short_author_tweet) < 140:
         return short_author_tweet
 
     sans_title = u'{authors} {link}'.format(authors=authors_et_al, link=link)
-    max_title_len = MAX_TWEET_LENGTH - 5 - len(sans_title)
+    max_title_len = MAX_TWEET_LENGTH - 4 - len(sans_title)
     truncated_title = truncate_at_whitespace(title, max_title_len)
     return truncated_title + u'... ' + sans_title
