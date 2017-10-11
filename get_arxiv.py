@@ -68,7 +68,6 @@ def fetch_updated_data(prev_data):
                                                                        results_df.published.max().date())
 
         new_links = ~results_df.link.apply(strip_version).isin(past_links)
-        import pdb; pdb.set_trace()
         if not new_links.any():
             break
 
