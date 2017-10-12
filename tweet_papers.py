@@ -12,7 +12,7 @@ from preprocessing import load_arxiv_and_tweets
 def get_title_tweet(date=None):
     if date is None:
         date = pd.Timestamp('now').date()
-    return 'arXiv papers, {}:'.format(date.strftime('%B %-m, %Y'))
+    return 'arXiv papers, {}:'.format(date.strftime('%B %-d, %Y'))
 
 
 def tweet_latest_day(dry_run=True):
