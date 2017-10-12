@@ -9,8 +9,10 @@ from predict import add_predictions_to_date
 from preprocessing import load_arxiv_and_tweets
 
 
-def get_title_tweet(date):
-    return 'arXiv papers published on {}:'.format(date.strftime('%B %-m, %Y'))
+def get_title_tweet(date=None):
+    if date is None:
+        date = pd.Timestamp('now').date()
+    return 'arXiv papers, {}:'.format(date.strftime('%B %-m, %Y'))
 
 
 def tweet_latest_day(dry_run=True):
@@ -22,7 +24,7 @@ def tweet_latest_day(dry_run=True):
     if not to_tweet.empty:
         published_on = to_tweet.iloc[0].published.date()
         paper_tweets = to_tweet.sort_values('prediction', ascending=False).apply(get_tweet_text, axis=1)
-        title_tweet = get_title_tweet(published_on)
+        title_tweet = get_title_tweet()
         to_tweet = [title_tweet] + list(paper_tweets.values)
 
         if dry_run:
