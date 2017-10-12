@@ -27,9 +27,3 @@ def load_conv_net():
         x = dict_transform.transform(docs)
         return model.predict(x)
     return predict_proba
-
-
-def get_df_predictions(df):
-    """Return a list of predicted probabilities for a dataframe"""
-
-    return
