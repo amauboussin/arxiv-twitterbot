@@ -8,6 +8,32 @@ import requests
 from constants import BASE_URL, BRUNDAGE_CATEGORIES, PICKLE_PATH, QUERY_PAGE_SIZE, QUERY_WAIT_TIME
 
 
+def check_for_update():
+    """Return true if an update to the arxiv is online"""
+    prev_data = pd.read_pickle(PICKLE_PATH)
+    prev_latest = prev_data.published.max().date()
+
+    # if we already have today's papers we are all set
+    if prev_latest == pd.Timestamp('now').date():
+        return False
+
+    # otherwise poll the arxiv
+    params = {
+        'search_query': 'cat:stat.ml',
+        'sortBy': 'submittedDate',
+        'start': 0,
+        'max_results': 1
+    }
+    param_string = 'search_query={search_query}&sortBy={sortBy}&start={start}&max_results={max_results}'.format(
+        **params)
+    response = requests.get(BASE_URL, params=param_string)
+    parsed = feedparser.parse(response.text)
+
+    if len(parsed.entries) > 0:
+        parsed_date = pd.Timestamp(parsed.entries[0]['published']).date()
+        return parsed_date > prev_latest
+
+    return False
 
 
 def get_entry_dict(entry):
