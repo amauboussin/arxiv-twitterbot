@@ -110,4 +110,4 @@ def update_arxiv():
     prev_data = pd.read_pickle(PICKLE_PATH)
     updated_data = fetch_updated_data(prev_data)
     print ('Downloaded {} new abstracts'.format(updated_data.shape[0] - prev_data.shape[0]))
-    updated_data.to_pickle('all_arxiv.pickle')
+    updated_data.to_pickle(PICKLE_PATH)
