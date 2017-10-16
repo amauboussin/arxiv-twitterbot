@@ -24,7 +24,7 @@ def tweet_latest_day(dry_run=True, check_if_most_recent=True):
     if not to_tweet.empty:
         published_on = to_tweet.iloc[0].published.date()
         paper_tweets = to_tweet.sort_values('prediction', ascending=False).apply(get_tweet_text, axis=1)
-        title_tweet = get_title_tweet(published_on)
+        title_tweet = get_title_tweet(one_weekday_later(pd.Timestamp(published_on)))
         to_tweet = [title_tweet] + list(paper_tweets.values)
 
         if dry_run:
@@ -51,6 +51,13 @@ def most_recent_weekday():
     dt = pd.Timestamp('now')
     while dt.weekday() > 4:  # Mon-Fri are 0-4
         dt = dt - pd.Timedelta(days=1)
+    return dt.date()
+
+
+def one_weekday_later(dt):
+    dt = dt + pd.Timedelta(days=1)
+    while dt.weekday() > 4: # Mon-Fri are 0-4
+        dt = dt + pd.Timedelta(days=1)
     return dt.date()
 
 
