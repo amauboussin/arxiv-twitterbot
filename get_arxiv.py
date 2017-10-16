@@ -17,7 +17,7 @@ def check_for_update():
     if prev_latest == pd.Timestamp('now').date():
         return False
 
-    # otherwise poll the arxiv
+    # otherwise poll the arxiv by requesting a single paper and checking its date
     params = {
         'search_query': 'cat:stat.ml',
         'sortBy': 'submittedDate',
@@ -53,6 +53,7 @@ def get_entry_dict(entry):
 
 
 def strip_version(link):
+    """Strip version number from arXiv paper link"""
     return link[:-2]
 
 
@@ -64,7 +65,7 @@ def load():
 
 
 def fetch_updated_data(prev_data):
-    """Get new paper from arxiv server"""
+    """Get new papers from arxiv server"""
 
     def make_query_string(categories):
         return '+OR+'.join(['cat:' + c for c in categories])

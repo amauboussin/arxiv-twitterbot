@@ -4,18 +4,13 @@ import pandas as pd
 import tweepy
 
 from constants import MAX_TWEET_LENGTH, TWEET_THRESHOLD, TIME_BETWEEN_TWEETS
-from credentials import *
+from credentials import access_token, access_token_secret, consumer_key, consumer_secret
 from predict import add_predictions_to_date
 from preprocessing import load_arxiv_and_tweets
 
 
-def get_title_tweet(published_date=None):
-    if published_date is None:
-        published_date = pd.Timestamp('now') + pd.Timedelta(days=1).date()
-    return 'arXiv papers, {}:'.format(published_date.strftime('%B %-d, %Y'))
-
-
 def tweet_latest_day(dry_run=True, check_if_most_recent=True):
+    """Get predictions and tweet papers for the papers published on max_publiscation_date"""
     df = load_arxiv_and_tweets()
     index_to_predict_for = get_published_on_day_index(df)
     df = add_predictions_to_date(df, index_to_predict_for)
@@ -47,22 +42,14 @@ def tweet_latest_day(dry_run=True, check_if_most_recent=True):
             print 'Done'
 
 
-def most_recent_weekday():
-    dt = pd.Timestamp('now')
-    while dt.weekday() > 4:  # Mon-Fri are 0-4
-        dt = dt - pd.Timedelta(days=1)
-    return dt.date()
-
-
-def one_weekday_later(dt):
-    dt = dt + pd.Timedelta(days=1)
-    while dt.weekday() > 4: # Mon-Fri are 0-4
-        dt = dt + pd.Timedelta(days=1)
-    return dt.date()
+def get_title_tweet(published_date=None):
+    if published_date is None:
+        published_date = pd.Timestamp('now') + pd.Timedelta(days=1).date()
+    return 'arXiv papers, {}:'.format(published_date.strftime('%B %-d, %Y'))
 
 
 def get_published_on_day_index(df, date=None):
-    """Return an index that locates paper published on the given date"""
+    """Return the index for papers published on the given date"""
     if date is None:
         date = df.published.dt.date.max()
     else:
@@ -75,18 +62,6 @@ def get_tweepy_api():
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth)
     return api
-
-
-def truncate_at_whitespace(text, max_len):
-    tokens = text.split()
-    truncated = []
-    cur_len = 0
-    for i, token in enumerate(tokens):
-        cur_len += len(tokens[i]) + 1
-        if cur_len > max_len:
-            break
-        truncated.append(token)
-    return ' '.join(truncated)
 
 
 def get_tweet_text(paper):
@@ -107,7 +82,7 @@ def get_tweet_text(paper):
 
     authors_et_al = last_names[0] + u' et al.'
     short_author_tweet = u'{title}. {authors} {link}'.format(title=title, authors=authors_et_al,
-                                                                link=link)
+                                                             link=link)
     if len(short_author_tweet) < 140:
         return short_author_tweet
 
@@ -115,3 +90,29 @@ def get_tweet_text(paper):
     max_title_len = MAX_TWEET_LENGTH - 4 - len(sans_title)
     truncated_title = truncate_at_whitespace(title, max_title_len)
     return truncated_title + u'... ' + sans_title
+
+
+def truncate_at_whitespace(text, max_len):
+    tokens = text.split()
+    truncated = []
+    cur_len = 0
+    for i, token in enumerate(tokens):
+        cur_len += len(tokens[i]) + 1
+        if cur_len > max_len:
+            break
+        truncated.append(token)
+    return ' '.join(truncated)
+
+
+def most_recent_weekday():
+    dt = pd.Timestamp('now')
+    while dt.weekday() > 4:  # Mon-Fri are 0-4
+        dt = dt - pd.Timedelta(days=1)
+    return dt.date()
+
+
+def one_weekday_later(dt):
+    dt = dt + pd.Timedelta(days=1)
+    while dt.weekday() > 4:  # Mon-Fri are 0-4
+        dt = dt + pd.Timedelta(days=1)
+    return dt.date()

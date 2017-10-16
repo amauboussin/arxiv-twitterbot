@@ -72,7 +72,6 @@ class ConvNet(object):
 
         conv_layer = Model(inputs=conv_input, outputs=conv_output)
 
-        # main sequential model
         self.model = Sequential()
         self.model.add(Embedding(self.vocab_size, embedding_size,
                                  input_length=self.sequence_length, weights=None))
