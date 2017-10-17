@@ -5,7 +5,7 @@ Brundage Bot is a twitter bot trained powered by a convolutional neural trained 
 
 Download a utf-8 csv of the dataset: [https://drive.google.com/file/d/0B34BjUTAgwm6SzdPWDAtVG1vWVU/](https://drive.google.com/file/d/0B34BjUTAgwm6SzdPWDAtVG1vWVU/)
 
-See the results on Twitter here: [twitter.com/arxiv_papers](https://twitter.com/BrundageBot).
+See the results on Twitter here: [twitter.com/BrundageBot](https://twitter.com/BrundageBot).
 
 
 
