@@ -21,7 +21,7 @@ def check_for_update():
     # otherwise poll the arxiv by requesting a single paper and checking its date
     params = {
         'search_query': 'cat:stat.ml',
-        'sortBy': 'lastUpdatedDate',
+        'sortBy': 'submittedDate',
         'start': 0,
         'max_results': 1
     }
@@ -31,7 +31,7 @@ def check_for_update():
     parsed = feedparser.parse(response.text)
 
     if len(parsed.entries) > 0:
-        parsed_date = pd.Timestamp(parsed.feed.updated).date()
+        parsed_date = pd.Timestamp(parsed.entries[0]['published']).date()
 
         if parsed_date > prev_latest:
             print 'New papers found'
