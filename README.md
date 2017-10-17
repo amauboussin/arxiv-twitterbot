@@ -3,8 +3,7 @@
 Brundage Bot is a twitter bot trained powered by a convolutional neural trained on [Mile Brundage's curated arXiv tweets](https://twitter.com/Miles_Brundage).
  
 
-Download a csv of the dataset: [https://drive.google.com/file/d/0B34BjUTAgwm6SzdPWDAtVG1vWVU/](https://drive.google.com/file/d/0B34BjUTAgwm6SzdPWDAtVG1vWVU/)
-
+Download a utf-8 csv of the dataset: [https://drive.google.com/file/d/0B34BjUTAgwm6SzdPWDAtVG1vWVU/](https://drive.google.com/file/d/0B34BjUTAgwm6SzdPWDAtVG1vWVU/)
 
 See the results on Twitter here: [twitter.com/arxiv_papers](https://twitter.com/arxiv_papers).
 
