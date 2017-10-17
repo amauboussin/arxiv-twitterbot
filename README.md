@@ -11,4 +11,5 @@ See the results on Twitter here: [twitter.com/arxiv_papers](https://twitter.com/
 ###### A few notes
 
 * The favorite and RT columns in miles_links.csv reflect the time when I downloaded each Tweet and are not up to date.
-* The Conv Net uses a different feature representation than the logistic regression model because I adapted it from one of my other projects.
+* The Conv Net uses a different feature representation than the logistic regression model because I adapted it from one of my other projects and didn't bother to change the code, not for any technical reason.
+ 
