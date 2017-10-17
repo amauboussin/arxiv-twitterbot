@@ -15,6 +15,7 @@ def check_for_update():
 
     # if we already have today's papers we are all set
     if prev_latest == pd.Timestamp('now').date():
+        print 'Already have today\'s papers'
         return False
 
     # otherwise poll the arxiv by requesting a single paper and checking its date
@@ -31,7 +32,14 @@ def check_for_update():
 
     if len(parsed.entries) > 0:
         parsed_date = pd.Timestamp(parsed.entries[0]['published']).date()
-        return parsed_date > prev_latest
+
+        if parsed_date > prev_latest:
+            print 'New papers found'
+            return True
+        else:
+            print 'Found papers from {}, but latest is from {}'.format(parsed_date, prev_latest)
+
+    print 'Couldn\'nt parse any papers'
 
     return False
 
