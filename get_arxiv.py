@@ -40,7 +40,7 @@ def check_for_update():
             print 'Found papers from {}, but latest is from {}'.format(parsed_date, prev_latest)
             return False
 
-    print 'Could\'nt parse any papers'
+    print 'Could not parse any papers'
 
     return False
 
@@ -69,7 +69,7 @@ def strip_version(link):
 def load():
     """Load data from pickle and remove duplicates"""
     df = pd.read_pickle(PICKLE_PATH)
-    return (df.sort_values('published', ascneding=False)
+    return (df.sort_values('published', ascending=False)
             .groupby('unique_link').first().reset_index())
 
 
