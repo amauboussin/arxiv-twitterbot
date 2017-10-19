@@ -3,17 +3,24 @@ from time import sleep
 import pandas as pd
 import tweepy
 
-from constants import MAX_TWEET_LENGTH, TWEET_THRESHOLD, TIME_BETWEEN_TWEETS
+from constants import MAX_TWEET_LENGTH, PAST_PREDICTIONS_PATH, TWEET_THRESHOLD, TIME_BETWEEN_TWEETS
 from credentials import access_token, access_token_secret, consumer_key, consumer_secret
-from predict import add_predictions_to_date
+from predict import add_conv_predictions_to_date
 from preprocessing import load_arxiv_and_tweets
 
 
 def tweet_latest_day(dry_run=True, check_if_most_recent=True):
     """Get predictions and tweet papers for the papers published on max_publiscation_date"""
     df = load_arxiv_and_tweets()
-    index_to_predict_for = get_published_on_day_index(df)
-    df = add_predictions_to_date(df, index_to_predict_for)
+    past_predictions = pd.read_pickle(PAST_PREDICTIONS_PATH)
+
+    index_to_predict_for = get_latest_without_prediction(df, past_predictions)
+    df = add_conv_predictions_to_date(df, index_to_predict_for)
+    print df.loc[~df.prediction.isnull()][['link', 'prediction']]
+    if not dry_run:
+        preds = df.loc[~df.prediction.isnull()][['link', 'prediction']]
+        pd.concat((past_predictions, preds)).to_pickle(PAST_PREDICTIONS_PATH)
+
     predicted_papers = df.loc[index_to_predict_for]
     to_tweet = predicted_papers[predicted_papers.prediction > TWEET_THRESHOLD]
     if not to_tweet.empty:
@@ -46,6 +53,13 @@ def get_title_tweet(published_date=None):
     if published_date is None:
         published_date = pd.Timestamp('now') + pd.Timedelta(days=1).date()
     return 'arXiv papers, {}:'.format(published_date.strftime('%B %-d, %Y'))
+
+
+def get_latest_without_prediction(df, predictions):
+    joined = predictions.set_index('link').join(df.set_index('link'), how='inner')
+    max_pub_time = joined.published.max()
+    print max_pub_time, ' max_pub_time'
+    return df[df.published > max_pub_time].index
 
 
 def get_published_on_day_index(df, date=None):
@@ -105,6 +119,7 @@ def truncate_at_whitespace(text, max_len):
 
 
 def most_recent_weekday():
+    """Return today (if today is on a weekday) or the friday beforehand if it is a weekend"""
     dt = pd.Timestamp('now')
     while dt.weekday() > 4:  # Mon-Fri are 0-4
         dt = dt - pd.Timedelta(days=1)

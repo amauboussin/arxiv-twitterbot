@@ -70,7 +70,7 @@ def load():
     """Load data from pickle and remove duplicates"""
     df = pd.read_pickle(PICKLE_PATH)
     return (df.sort_values('published', ascending=False)
-            .groupby('unique_link').first().reset_index())
+            .groupby('link').first().reset_index())
 
 
 def fetch_updated_data(prev_data):
