@@ -15,6 +15,8 @@ def tweet_latest_day(dry_run=True, check_if_most_recent=True):
     past_predictions = pd.read_pickle(PAST_PREDICTIONS_PATH)
 
     index_to_predict_for = get_latest_without_prediction(df, past_predictions)
+    if index_to_predict_for.size == 0:
+        raise Exception('No new papers found')
     df = add_conv_predictions_to_date(df, index_to_predict_for)
     if not dry_run:
         preds = df.loc[~df.prediction.isnull()][['link', 'prediction']]
@@ -57,6 +59,7 @@ def get_title_tweet(published_date=None):
 def get_latest_without_prediction(df, predictions):
     joined = predictions.set_index('link').join(df.set_index('link'), how='inner')
     max_pub_time = joined.published.max()
+    print 'Tweeting papers from {} on'.format(max_pub_time)
     return df[df.published > max_pub_time].index
 
 
