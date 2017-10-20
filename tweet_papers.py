@@ -25,7 +25,7 @@ def tweet_latest_day(dry_run=True, check_if_most_recent=True):
     predicted_papers = df.loc[index_to_predict_for]
     to_tweet = predicted_papers[predicted_papers.prediction > TWEET_THRESHOLD]
     if not to_tweet.empty:
-        published_on = to_tweet.iloc[0].published.date()
+        published_on = to_tweet.published.max().date()
         paper_tweets = to_tweet.sort_values('prediction', ascending=False).apply(get_tweet_text, axis=1)
         title_tweet = get_title_tweet(one_weekday_later(pd.Timestamp(published_on)))
         to_tweet = [title_tweet] + list(paper_tweets.values) + ['Fin.']
