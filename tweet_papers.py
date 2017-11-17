@@ -63,12 +63,13 @@ def tweet_day(dry_run=True, date_to_tweet=None):
 
 
 def get_email_body(predicted_papers):
-    tweet_text = predicted_papers.head().apply(get_tweet_text, axis=1).values
-    tweet_preds = predicted_papers.prediction
+    predicted_papers = predicted_papers.sort_values('prediction', ascending=False)
+    tweet_text = predicted_papers.apply(get_tweet_text, axis=1).values
+    tweet_preds = predicted_papers.prediction.values
     email_body = "Today's Brundage Bot papers\n\n"
     for text, pred in zip(tweet_text, tweet_preds):
-        email_body += 'p(tweet) = {:.2f}\n'.format(pred)
         email_body += text
+        email_body += ' p(tweet) = {:.2f}\n'.format(pred)
         email_body += '\n\n'
     return email_body
 
