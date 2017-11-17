@@ -12,12 +12,19 @@ from predict import add_conv_predictions_to_date
 from preprocessing import load_arxiv_and_tweets
 
 
-def tweet_day(dry_run=True, ):
-    """Get predictions and tweet papers for the papers published on max_publiscation_date"""
+def tweet_day(dry_run=True, date_to_tweet=None):
+    """Get predictions and tweet papers for the papers published on max_publiscation_date
+    Args:
+        dry_run: If True, just print out tweets rather than actually tweeting
+        date_to_tweet: If None, tweet papers from most recent day
+    """
     df = load_arxiv_and_tweets()
     past_predictions = pd.read_pickle(PAST_PREDICTIONS_PATH)
 
-    index_to_predict_for = get_latest_without_prediction(df, past_predictions)
+    if date_to_tweet is None:
+        index_to_predict_for = get_latest_without_prediction(df, past_predictions)
+    else:
+        index_to_predict_for = get_published_on_day_index(df, date_to_tweet)
     if index_to_predict_for.size == 0:
         raise Exception('No new papers found')
     df = add_conv_predictions_to_date(df, index_to_predict_for)
@@ -76,7 +83,7 @@ def send_mail(mail_subject, mail_body, to_addr):
     msg['From'] = from_addr
     msg['To'] = to_addr
     msg['Subject'] = mail_subject
-    msg.attach(MIMEText(mail_body, 'plain'))
+    msg.attach(MIMEText(mail_body.encode('utf-8'), 'plain', 'utf-8'))
 
     server.sendmail("brundage.bot@gmail.com", to_addr, msg.as_string())
     server.quit()
