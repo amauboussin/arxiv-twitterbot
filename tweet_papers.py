@@ -1,15 +1,18 @@
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+import smtplib
 from time import sleep
 
 import pandas as pd
 import tweepy
 
 from constants import MAX_TWEET_LENGTH, PAST_PREDICTIONS_PATH, TWEET_THRESHOLD, TIME_BETWEEN_TWEETS
-from credentials import access_token, access_token_secret, consumer_key, consumer_secret
+from credentials import access_token, access_token_secret, consumer_key, consumer_secret, email_password
 from predict import add_conv_predictions_to_date
 from preprocessing import load_arxiv_and_tweets
 
 
-def tweet_latest_day(dry_run=True, check_if_most_recent=True):
+def tweet_day(dry_run=True, ):
     """Get predictions and tweet papers for the papers published on max_publiscation_date"""
     df = load_arxiv_and_tweets()
     past_predictions = pd.read_pickle(PAST_PREDICTIONS_PATH)
@@ -23,6 +26,7 @@ def tweet_latest_day(dry_run=True, check_if_most_recent=True):
         pd.concat((past_predictions, preds)).to_pickle(PAST_PREDICTIONS_PATH)
 
     predicted_papers = df.loc[index_to_predict_for]
+    email_body = get_email_body(predicted_papers)
     to_tweet = predicted_papers[predicted_papers.prediction > TWEET_THRESHOLD]
     if not to_tweet.empty:
         published_on = to_tweet.published.max().date()
@@ -35,7 +39,7 @@ def tweet_latest_day(dry_run=True, check_if_most_recent=True):
                 print t
                 print
 
-        elif check_if_most_recent and published_on < most_recent_weekday():
+        elif published_on < most_recent_weekday():
             print "Don't have any new papers for today, latest are from {}".format(published_on)
             return
 
@@ -48,6 +52,34 @@ def tweet_latest_day(dry_run=True, check_if_most_recent=True):
                 in_reply_to = last_tweet.id
                 sleep(TIME_BETWEEN_TWEETS)
             print 'Done'
+    send_mail(title_tweet[:-1], email_body, 'amaub217@gmail.com')
+
+
+def get_email_body(predicted_papers):
+    tweet_text = predicted_papers.head().apply(get_tweet_text, axis=1).values
+    tweet_preds = predicted_papers.prediction
+    email_body = "Today's Brundage Bot papers\n\n"
+    for text, pred in zip(tweet_text, tweet_preds):
+        email_body += 'p(tweet) = {:.2f}\n'.format(pred)
+        email_body += text
+        email_body += '\n\n'
+    return email_body
+
+
+def send_mail(mail_subject, mail_body, to_addr):
+    from_addr = "brundage.bot@gmail.com"
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(from_addr, email_password)
+
+    msg = MIMEMultipart()
+    msg['From'] = from_addr
+    msg['To'] = to_addr
+    msg['Subject'] = mail_subject
+    msg.attach(MIMEText(mail_body, 'plain'))
+
+    server.sendmail("brundage.bot@gmail.com", to_addr, msg.as_string())
+    server.quit()
 
 
 def get_title_tweet(published_date=None):
@@ -65,10 +97,7 @@ def get_latest_without_prediction(df, predictions):
 
 def get_published_on_day_index(df, date=None):
     """Return the index for papers published on the given date"""
-    if date is None:
-        date = df.published.dt.date.max()
-    else:
-        date = pd.Timestamp(date).date()
+    date = pd.Timestamp(date).date()
     return df[df.published.dt.date == date].index
 
 
