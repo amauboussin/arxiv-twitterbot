@@ -1,7 +1,7 @@
 import os
 
 TWEET_THRESHOLD = .5  # Brundage bot tweet if p(miles tweeted) is above this value
-MAX_TWEET_LENGTH = 200
+MAX_TWEET_LENGTH = 280
 TIME_BETWEEN_TWEETS = 2
 
 BASE_URL = 'http://export.arxiv.org/api/query'

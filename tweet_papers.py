@@ -124,18 +124,28 @@ def get_tweet_text(paper):
 
     if len(paper.authors) > 1:
         oxford_comma = u',' if len(paper.authors) > 2 else u''
-        authors = u', '.join(last_names[:-1]) + oxford_comma + u' and ' + last_names[-1]
-    else:
-        authors = paper.authors[0]
 
-    full_tweet = u'{title}. {authors} {link}'.format(title=title, authors=authors, link=link)
-    if len(full_tweet) < 140:
-        return full_tweet
+        full_name_authors = u', '.join(paper.authors[:-1]) + oxford_comma + u' and ' + paper.authors[-1]
+        last_name_authors = u', '.join(last_names[:-1]) + oxford_comma + u' and ' + last_names[-1]
+    else:
+        full_name_authors = paper.authors[0]
+        last_name_authors = last_names[0]
+
+
+    full_name_tweet = u'{title}. {authors} {link}'.format(title=title,
+                                                          authors=full_name_authors, link=link)
+    last_name_tweet = u'{title}. {authors} {link}'.format(title=title,
+                                                           authors=last_name_authors, link=link)
+
+    if len(full_name_tweet) < MAX_TWEET_LENGTH:
+        return full_name_tweet
+    elif len(last_name_tweet) < MAX_TWEET_LENGTH:
+        return last_name_tweet
 
     authors_et_al = last_names[0] + u' et al.'
     short_author_tweet = u'{title}. {authors} {link}'.format(title=title, authors=authors_et_al,
                                                              link=link)
-    if len(short_author_tweet) < 140:
+    if len(short_author_tweet) < MAX_TWEET_LENGTH:
         return short_author_tweet
 
     sans_title = u'{authors} {link}'.format(authors=authors_et_al, link=link)
