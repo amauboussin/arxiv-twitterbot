@@ -7,7 +7,7 @@ import pandas as pd
 import tweepy
 
 from constants import MAX_TWEET_LENGTH, PAST_PREDICTIONS_PATH, TWEET_THRESHOLD, TIME_BETWEEN_TWEETS
-from credentials import access_token, access_token_secret, consumer_key, consumer_secret, email_password
+from credentials import access_token, access_token_secret, consumer_key, consumer_secret, email_password, mailgun_api_key
 from predict import add_conv_predictions_to_date
 from preprocessing import load_arxiv_and_tweets
 
