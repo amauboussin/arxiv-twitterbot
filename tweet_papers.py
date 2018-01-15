@@ -75,19 +75,14 @@ def get_email_body(predicted_papers):
 
 
 def send_mail(mail_subject, mail_body, to_addr):
-    from_addr = "brundage.bot@gmail.com"
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(from_addr, email_password)
-
-    msg = MIMEMultipart()
-    msg['From'] = from_addr
-    msg['To'] = to_addr
-    msg['Subject'] = mail_subject
-    msg.attach(MIMEText(mail_body.encode('utf-8'), 'plain', 'utf-8'))
-
-    server.sendmail("brundage.bot@gmail.com", to_addr, msg.as_string())
-    server.quit()
+    return requests.post(
+    "https://api.mailgun.net/v3/mg.amauboussin.com/messages",
+    auth=("api", mailgun_api_key),
+    data={"from": "Brundage Bot <brundagebot@amauboussin.com>",
+          "to": ["amaub217@gmail.com"],
+          "subject": mail_subject,
+          "text": mail_body}
+    )
 
 
 def get_title_tweet(published_date=None):
