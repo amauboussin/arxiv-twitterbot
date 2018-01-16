@@ -4,6 +4,7 @@ import smtplib
 from time import sleep
 
 import pandas as pd
+import requests
 import tweepy
 
 from constants import MAX_TWEET_LENGTH, PAST_PREDICTIONS_PATH, TWEET_THRESHOLD, TIME_BETWEEN_TWEETS
