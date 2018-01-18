@@ -61,6 +61,8 @@ def tweet_day(dry_run=True, date_to_tweet=None):
                 sleep(TIME_BETWEEN_TWEETS)
             print 'Done'
     send_mail(title_tweet[:-1], email_body, 'amaub217@gmail.com')
+    send_mail(title_tweet[:-1], email_body, 'milesb@gwmail.gwu.edu')
+
 
 
 def get_email_body(predicted_papers):
@@ -80,7 +82,7 @@ def send_mail(mail_subject, mail_body, to_addr):
     "https://api.mailgun.net/v3/mg.amauboussin.com/messages",
     auth=("api", mailgun_api_key),
     data={"from": "Brundage Bot <brundagebot@amauboussin.com>",
-          "to": ["amaub217@gmail.com"],
+          "to": [to_addr],
           "subject": mail_subject,
           "text": mail_body}
     )
