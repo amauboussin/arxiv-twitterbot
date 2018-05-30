@@ -44,7 +44,7 @@ def tweet_day(dry_run=True, date_to_tweet=None):
 
         if dry_run:
             for t in to_tweet:
-                print t
+                print t.encode('ascii', 'ignore')
                 print
 
         elif published_on < most_recent_weekday():
